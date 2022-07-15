@@ -3,14 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SeriesFormRequest;
-use App\Models\Episode;
-use App\Models\Season;
 use App\Models\Series;
+use App\Repositories\EloquentSeriesRepository;
+use App\Repositories\SeriesRepository;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class SeriesController extends Controller
 {
+    public function __construct(private SeriesRepository $repository)
+    {
+    }
+
     public function index(Request $request): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
         //Não é a melhor maneira -> FACADE
@@ -22,7 +27,6 @@ class SeriesController extends Controller
 
         //ou return view('listar-series', compact('series'));
         //ou return view('series.index', ['series' => $series]);
-
         $series = Series::all();
         $mensagemSucesso = session('mensagem.sucesso');
 
@@ -38,7 +42,7 @@ class SeriesController extends Controller
 
     public function store(SeriesFormRequest $request): \Illuminate\Routing\Redirector|\Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse
     {
-        $nomeSerie = $request->nome;
+        $serie = $this->repository->add($request);
         //Não é a melhor maneira -> FACADE
         //--> DB::insert('INSERT INTO series (nome) VALUES(?)', [$nomeSerie]);
 
@@ -46,29 +50,6 @@ class SeriesController extends Controller
         /*$serie = new Serie();
         $serie->nome = $nomeSerie;
         $serie->save();*/
-        /**
-         * @var $serie Series
-         */
-        $serie = Series::create($request->all());
-        $seasons = [];
-        for($i = 1; $i <= $request->seasonsQty; $i++) {
-            $seasons[] = [
-                'series_id' => $serie->id,
-                'number' => $i
-            ];
-        }
-        Season::insert($seasons);
-
-        $episodes = [];
-        foreach ($serie->seasons as $season) {
-            for ($j = 1; $j <= $request->episodesPerSeason; $j++) {
-                $episodes []= [
-                    'season_id' => $season->id,
-                    'number' => $j
-                ];
-            }
-        }
-        Episode::insert($episodes);
 
         return to_route('series.index')->with('mensagem.sucesso', "Série {$serie->nome} criada com sucesso");
     }
