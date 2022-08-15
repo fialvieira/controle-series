@@ -38,6 +38,15 @@ Route::get('/logout', [LoginController::class, 'destroy'])->name('logout');
 Route::get('/register', [UsersController::class, 'create'])->name('users.create');
 Route::post('/register', [UsersController::class, 'store'])->name('users.store');
 
+Route::get('/email', function (){
+    return new \App\Mail\SeriesCreated(
+        'Série de Teste',
+        1,
+        5,
+        10
+    );
+});
+
 /*Route::post('/seasons/{season}/episodes', function (Request $request) {
     dd($request->all());
 });*/
