@@ -38,7 +38,7 @@ Route::get('/logout', [LoginController::class, 'destroy'])->name('logout');
 Route::get('/register', [UsersController::class, 'create'])->name('users.create');
 Route::post('/register', [UsersController::class, 'store'])->name('users.store');
 
-Route::get('/email', function (){
+Route::get('/email', function () {
     return new \App\Mail\SeriesCreated(
         'Série de Teste',
         1,
@@ -46,13 +46,3 @@ Route::get('/email', function (){
         10
     );
 });
-
-/*Route::post('/seasons/{season}/episodes', function (Request $request) {
-    dd($request->all());
-});*/
-//Route::delete('/series/destroy/{serie}', [SeriesController::class, 'destroy'])->name('series.destroy');
-/*Route::controller(SeriesController::class)->group(function () {
-    Route::get('/series', 'index')->name('series.index');
-    Route::get('/series/create', 'create')->name('series.create');
-    Route::post('/series', 'store')->name('series.store');
-});*/

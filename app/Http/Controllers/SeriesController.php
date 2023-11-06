@@ -48,7 +48,7 @@ class SeriesController extends Controller
     public function store(SeriesFormRequest $request): \Illuminate\Routing\Redirector|\Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse
     {
         //TODO --> Validar tipo de arquivo: IMAGEM
-        $coverPath = $request->file('cover')->store('series_cover', 'public');
+        $coverPath = $request->hasFile('cover') ? $request->file('cover')->store('series_cover', 'public') : null;
         $request->coverPath = $coverPath;
         $serie = $this->repository->add($request);
         $seriesCreatedEvent = new \App\Events\SeriesCreated(
